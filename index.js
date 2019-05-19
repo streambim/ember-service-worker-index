@@ -5,7 +5,7 @@ var Config = require('./lib/config');
 var mergeTrees = require('broccoli-merge-trees');
 
 module.exports = {
-  name: 'ember-service-worker-index',
+  name: 'ember-service-worker-index-fallback',
 
   included: function(app) {
     this._super.included && this._super.included.apply(this, arguments);

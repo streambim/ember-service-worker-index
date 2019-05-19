@@ -1,7 +1,5 @@
 # Ember Service Worker Index
 
-**[ember-service-worker-index is built and maintained by DockYard, contact us for expert Ember.js consulting](https://dockyard.com/ember-consulting)**.
-
 _An Ember Service Worker plugin that caches an Ember app's index file_
 
 ## F#$& my assets aren't updating in development mode
@@ -12,7 +10,7 @@ menu in the Chrome devtools.
 ## Installation
 
 ```
-ember install ember-service-worker-index
+ember install ember-service-worker-index-fallback
 ```
 
 ## Configuration
@@ -27,6 +25,9 @@ module.exports = function(defaults) {
     'esw-index': {
       // Where the location of your index file is at, defaults to `index.html`
       location: 'app-shell.html',
+
+      // time in milliseconds that fetching index.html from network may take before the cached version is served
+      requestTimeout: 500,
 
       // Bypass esw-index and don't serve cached index file for matching URLs
       excludeScope: [/\/non-ember-app(\/.*)?$/, /\/another-app(\/.*)?$/],
@@ -50,21 +51,9 @@ module.exports = function(defaults) {
 ## Authors
 
 * [Marten Schilstra](http://twitter.com/martndemus)
+* [st-h](https://github.com/st-h)
 
 ## Versioning
 
 This library follows [Semantic Versioning](http://semver.org)
 
-## Want to help?
-
-Please do! We are always looking to improve this library. Please see our
-[Contribution Guidelines](https://github.com/dockyard/ember-service-worker-index/blob/master/CONTRIBUTING.md)
-on how to properly submit issues and pull requests.
-
-## Legal
-
-[DockYard](http://dockyard.com/), Inc. &copy; 2016
-
-[@dockyard](http://twitter.com/dockyard)
-
-[Licensed under the MIT license](http://www.opensource.org/licenses/mit-license.php)
