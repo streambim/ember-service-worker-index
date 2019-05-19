@@ -4,7 +4,8 @@ import {
   VERSION,
   INDEX_EXCLUDE_SCOPE,
   INDEX_INCLUDE_SCOPE,
-  REQUEST_TIMEOUT
+  REQUEST_TIMEOUT_CACHED,
+  REQUEST_TIMEOUT_UNCACHED
 
 } from 'ember-service-worker-index-fallback/service-worker/config';
 
@@ -43,26 +44,18 @@ self.addEventListener('fetch', (event) => {
   if (!isTests && isGETRequest && isHTMLRequest && isLocal && scopeIncluded && !scopeExcluded) {
 
     event.respondWith(new Promise(function (fulfill, reject) {
-      fromNetwork(request, REQUEST_TIMEOUT).then((response) => {
-        fulfill(response);
-      }, (error) => {
-        fromCache(request).then((response) => {
-          if (response) {
-            fulfill(response);
-          } else {
-            reject(response);
-          }
+      caches.match(INDEX_HTML_URL, { cacheName: CACHE_NAME }).then((cachedResponse) => {
+        const timeout = cachedResponse ? REQUEST_TIMEOUT_CACHED : REQUEST_TIMEOUT_UNCACHED;
+
+        fromNetwork(request, timeout).then((response) => {
+          fulfill(response);
         }, (error) => {
-          reject(error);
-        })
+          fulfill(cachedResponse);
+        });
       })
     }));
   }
 });
-
-function fromCache() {
-  return caches.match(INDEX_HTML_URL, { cacheName: CACHE_NAME });
-}
 
 function fromNetwork(request, timeout) {
   return new Promise(function (fulfill, reject) {
