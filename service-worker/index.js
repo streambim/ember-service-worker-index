@@ -12,7 +12,7 @@ import cleanupCaches from 'ember-service-worker/service-worker/cleanup-caches';
 const CACHE_KEY_PREFIX = 'esw-index';
 const CACHE_NAME = `${CACHE_KEY_PREFIX}-${VERSION}`;
 
-const INDEX_HTML_URL = new URL(INDEX_HTML_PATH, self.location).toString();
+const INDEX_HTML_URL = new URL(INDEX_HTML_PATH, self.location.href).href;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
