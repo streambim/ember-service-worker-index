@@ -1,18 +1,22 @@
-# Ember Service Worker Index
+ember-service-worker-index-fallback
+==============================================================================
+[![Greenkeeper badge](https://badges.greenkeeper.io/st-h/ember-service-worker-index-fallback.svg)](https://greenkeeper.io/)
+[![Latest NPM release][npm-badge]][npm-badge-url]
+[![Code Climate][codeclimate-badge]][codeclimate-badge-url]
+[![Ember Observer Score][ember-observer-badge]][ember-observer-badge-url]
+[![Dependencies][dependencies-badge]][dependencies-badge-url]
+[![Dev Dependencies][devDependencies-badge]][devDependencies-badge-url]
 
-**[ember-service-worker-index is built and maintained by DockYard, contact us for expert Ember.js consulting](https://dockyard.com/ember-consulting)**.
-
-_An Ember Service Worker plugin that caches an Ember app's index file_
+An Ember Service Worker plugin that serves an Ember app's index file and falls back to a cached version when loading fails
 
 ## F#$& my assets aren't updating in development mode
 
-Turn on the "Update on reload" setting in the `Application > Service Workers`
-menu in the Chrome devtools.
+Turn on the "Update on reload" setting in the `Application > Service Workers` menu in the Chrome devtools.
 
 ## Installation
 
 ```
-ember install ember-service-worker-index
+ember install ember-service-worker-index-fallback
 ```
 
 ## Configuration
@@ -27,6 +31,12 @@ module.exports = function(defaults) {
     'esw-index': {
       // Where the location of your index file is at, defaults to `index.html`
       location: 'app-shell.html',
+
+      // time in milliseconds that fetching index.html from network may take before the cached version is served
+      requestTimeoutCached: 500,
+
+      // time in milliseconds that fetching index.html from network may take when no cached version is available
+      requestTimeoutUncached: 60000
 
       // Bypass esw-index and don't serve cached index file for matching URLs
       excludeScope: [/\/non-ember-app(\/.*)?$/, /\/another-app(\/.*)?$/],
@@ -49,22 +59,26 @@ module.exports = function(defaults) {
 
 ## Authors
 
+This addon has been forked from DockYards [ember service worker index](https://github.com/DockYard/ember-service-worker-index)
+* [st-h](https://github.com/st-h)
 * [Marten Schilstra](http://twitter.com/martndemus)
 
 ## Versioning
 
 This library follows [Semantic Versioning](http://semver.org)
 
-## Want to help?
+License
+------------------------------------------------------------------------------
 
-Please do! We are always looking to improve this library. Please see our
-[Contribution Guidelines](https://github.com/dockyard/ember-service-worker-index/blob/master/CONTRIBUTING.md)
-on how to properly submit issues and pull requests.
+This project is licensed under the [MIT License](LICENSE.md).
 
-## Legal
-
-[DockYard](http://dockyard.com/), Inc. &copy; 2016
-
-[@dockyard](http://twitter.com/dockyard)
-
-[Licensed under the MIT license](http://www.opensource.org/licenses/mit-license.php)
+[npm-badge]: https://img.shields.io/npm/v/ember-service-worker-index-fallback.svg
+[npm-badge-url]: https://www.npmjs.com/package/ember-service-worker-index-fallback
+[codeclimate-badge]: https://api.codeclimate.com/v1/badges/b62c466a81d28a69abd1/maintainability
+[codeclimate-badge-url]: https://codeclimate.com/github/st-h/ember-service-worker-index-fallback/maintainability
+[ember-observer-badge]: http://emberobserver.com/badges/ember-service-worker-index-fallback.svg
+[ember-observer-badge-url]: http://emberobserver.com/addons/ember-service-worker-index-fallback
+[dependencies-badge]: https://img.shields.io/david/st-h/ember-service-worker-index-fallback.svg
+[dependencies-badge-url]: https://david-dm.org/st-h/ember-service-worker-index-fallback
+[devDependencies-badge]: https://img.shields.io/david/dev/st-h/ember-service-worker-index-fallback.svg
+[devDependencies-badge-url]: https://david-dm.org/st-h/ember-service-worker-index-fallback#info=devDependencies

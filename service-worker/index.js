@@ -3,8 +3,11 @@ import {
   ENVIRONMENT,
   VERSION,
   INDEX_EXCLUDE_SCOPE,
-  INDEX_INCLUDE_SCOPE
-} from 'ember-service-worker-index/service-worker/config';
+  INDEX_INCLUDE_SCOPE,
+  REQUEST_TIMEOUT_CACHED,
+  REQUEST_TIMEOUT_UNCACHED
+
+} from 'ember-service-worker-index-fallback/service-worker/config';
 
 import { urlMatchesAnyPattern } from 'ember-service-worker/service-worker/url-utils';
 import cleanupCaches from 'ember-service-worker/service-worker/cleanup-caches';
@@ -39,22 +42,29 @@ self.addEventListener('fetch', (event) => {
   let isTests = url.pathname === '/tests' && ENVIRONMENT === 'development';
 
   if (!isTests && isGETRequest && isHTMLRequest && isLocal && scopeIncluded && !scopeExcluded) {
-    event.respondWith(
-      caches.match(INDEX_HTML_URL, { cacheName: CACHE_NAME })
-        .then((response) => {
-          if (response) {
-            return response;
-          }
 
-          // Re-fetch the resource in the event that the cache had been cleared
-          // (mostly an issue with Safari 11.1 where clearing the cache causes
-          // the browser to throw a non-descriptive blank error page).
-          return fetch(INDEX_HTML_URL, { credentials: 'include' })
-            .then((fetchedResponse) => {
-              caches.open(CACHE_NAME).then((cache) => cache.put(INDEX_HTML_URL, fetchedResponse));
-              return fetchedResponse.clone();
-            });
-        })
-    );
+    event.respondWith(new Promise(function (fulfill, reject) {
+      caches.match(INDEX_HTML_URL, { cacheName: CACHE_NAME }).then((cachedResponse) => {
+        const timeout = cachedResponse ? REQUEST_TIMEOUT_CACHED : REQUEST_TIMEOUT_UNCACHED;
+
+        fromNetwork(request, timeout).then((response) => {
+          fulfill(response);
+        }, (error) => {
+          fulfill(cachedResponse);
+        });
+      })
+    }));
   }
 });
+
+function fromNetwork(request, timeout) {
+  return new Promise(function (fulfill, reject) {
+
+    var timeoutId = setTimeout(reject, timeout);
+
+    fetch(request, { credentials: 'include' }).then(function (response) {
+      clearTimeout(timeoutId);
+      fulfill(response.clone());
+    }, reject);
+  });
+}
